@@ -3,12 +3,17 @@ our netuid on commune:
 * mainnet: 14
 * testnet: 13
 
+## Hardware Requirements
+* GPU: >= 16GB VRAM
+* Storage: >= 50GB
+
+## System Requirements
+* NVIDIA GPU Driver
+* CUDA 12.2
+* Python >= 3.10
 
 ## Installation
-
-First, install python3 (version >= 3.10)
-
-Then, [Install Poetry](https://python-poetry.org/docs/)
+[Install Poetry](https://python-poetry.org/docs/) if you don't have it.
 
 After that, run the following commands:
 ```
