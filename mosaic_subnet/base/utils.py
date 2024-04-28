@@ -34,15 +34,3 @@ def get_ip_port(modules_addresses: dict[int, str]):
         id: x.group(0).split(":") for id, x in filtered_addr.items() if x is not None
     }
     return ip_port
-
-
-def set_weights(
-    score_dict: dict[int, float], netuid: int, client: CommuneClient, key: Keypair
-) -> None:
-    print("set weights", score_dict)
-    uids = []
-    weights = []
-    for uid, score in score_dict.items():
-        uids.append(uid)
-        weights.append(score)
-    client.vote(key=key, uids=uids, weights=weights, netuid=netuid)

@@ -1,4 +1,3 @@
-
 from io import BytesIO
 
 import torch
@@ -22,15 +21,16 @@ class CLIP(Module):
         inputs = self.processor(
             text=prompt, images=image, return_tensors="pt", padding=True
         )
-        inputs['input_ids'] = inputs['input_ids'].to(self.device)
-        inputs['attention_mask'] = inputs['attention_mask'].to(self.device)
-        inputs['pixel_values'] = inputs['pixel_values'].to(self.device)
+        inputs["input_ids"] = inputs["input_ids"].to(self.device)
+        inputs["attention_mask"] = inputs["attention_mask"].to(self.device)
+        inputs["pixel_values"] = inputs["pixel_values"].to(self.device)
         outputs = self.model(**inputs)
-        score = outputs.logits_per_image.sum().tolist()
+        score = outputs.logits_per_image.sum().tolist() / 100
         return score
-    
+
     def get_metadata(self) -> dict:
         return {"model": self.model_name}
+
 
 if __name__ == "__main__":
     import httpx

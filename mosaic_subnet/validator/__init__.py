@@ -19,9 +19,10 @@ from communex.compat.key import classic_load_key
 
 from mosaic_subnet.validator._config import ValidatorSettings
 from mosaic_subnet.validator.model import CLIP
-from mosaic_subnet.base.utils import get_netuid, set_weights
+from mosaic_subnet.base.utils import get_netuid
 from mosaic_subnet.base import SampleInput, BaseValidator
 from mosaic_subnet.validator.dataset import ValidationDataset
+from mosaic_subnet.validator.math import threshold_sigmoid_reward_distribution
 
 
 class Validator(BaseValidator, Module):
@@ -46,7 +47,7 @@ class Validator(BaseValidator, Module):
     async def validate_step(self):
         score_dict = dict()
         modules_info = self.get_queryable_miners()
-    
+
         input = self.get_validate_input()
         print("input:", input)
         get_miner_generation = partial(self.get_miner_generation, input=input)
@@ -61,16 +62,38 @@ class Validator(BaseValidator, Module):
                 continue
             score = self.calculate_score(miner_answer, input.prompt)
             score_dict[uid] = score
-        
+
         if not score_dict:
             print("score_dict empty, skip set weights")
             return
+        print("original scores:", score_dict)
+        adjsuted_to_sigmoid = threshold_sigmoid_reward_distribution(
+            score_dict=score_dict
+        )
+        print("sigmoid scores:", adjsuted_to_sigmoid)
+        # Create a new dictionary to store the weighted scores
+        weighted_scores: dict[int, int] = {}
+
+        # Calculate the sum of all inverted scores
+        scores = sum(adjsuted_to_sigmoid.values())
+
+        # Iterate over the items in the score_dict
+        for uid, score in adjsuted_to_sigmoid.items():
+            # Calculate the normalized weight as an integer
+            weight = int(score / scores * 10)
+
+            # Add the weighted score to the new dictionary
+            weighted_scores[uid] = weight
+
+        # filter out 0 weights
+        weighted_scores = {k: v for k, v in weighted_scores.items() if v != 0}
+        print("weighted scores:", weighted_scores)
         try:
-            set_weights(
-                score_dict=score_dict,
-                netuid=self.netuid,
-                client=self.c_client,
-                key=self.key,
+            uids = list(weighted_scores.keys())
+            weights = list(weighted_scores.values())
+            print(f"Settings weights for the following uids: {uids}")
+            self.c_client.vote(
+                key=self.key, uids=uids, weights=weights, netuid=self.netuid
             )
         except Exception as e:
             print("ERROR", e)
