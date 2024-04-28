@@ -8,8 +8,8 @@ our netuid on commune:
 * Storage: >= 50GB
 
 ## System Requirements
-* NVIDIA GPU Driver
-* CUDA 12.2
+* NVIDIA GPU Driver installed
+* CUDA >= 12.2
 * Python >= 3.10
 
 ## Installation
