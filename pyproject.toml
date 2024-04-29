@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = []
 readme = "README.md"
-packages = [{include = "mosaic_subnet"}]
+packages = [{ include = "mosaic_subnet" }]
 [tool.poetry.dependencies]
 python = "^3.10"
 diffusers = "^0.27.2"
@@ -18,8 +18,9 @@ keylimiter = "^0.1.5"
 communex = "^0.1.16"
 transformers = "^4.40.1"
 torch = [
-    { url="https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp310-cp310-linux_x86_64.whl", python=">=3.10,<3.11", markers="sys_platform == 'linux'"},
-    { url="https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp311-cp311-linux_x86_64.whl", python=">=3.11,<3.12", markers="sys_platform == 'linux'"},
+    { version = "2.3.0", source = "pypi", markers = "sys_platform == 'darwin'" },
+    { url = "https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp310-cp310-linux_x86_64.whl", python = ">=3.10,<3.11", markers = "sys_platform == 'linux'" },
+    { url = "https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp311-cp311-linux_x86_64.whl", python = ">=3.11,<3.12", markers = "sys_platform == 'linux'" },
 ]
 accelerate = "^0.29.3"
 httpx = "^0.27.0"
