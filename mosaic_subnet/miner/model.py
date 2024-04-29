@@ -12,14 +12,14 @@ class DiffUsers(Module):
     def __init__(self, model_name: str = "stabilityai/sdxl-turbo") -> None:
         super().__init__()
         self.model_name = model_name
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "mps")
         self.pipeline = AutoPipelineForText2Image.from_pretrained(
             model_name, torch_dtype=torch.float16, variant="fp16"
         ).to(self.device)
 
     @endpoint
     def sample(
-        self, prompt: str, steps: int = 50, negative_prompt: str = "", seed: 
+        self, prompt: str, steps: int = 50, negative_prompt: str = "", seed:
     Optional[int]=None) -> str:
         generator = torch.Generator(self.device)
         if seed is None:

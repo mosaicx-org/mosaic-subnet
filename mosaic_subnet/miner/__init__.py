@@ -33,7 +33,7 @@ class Miner(DiffUsers):
 if __name__ == "__main__":
     settings = MinerSettings(
         host="0.0.0.0",
-        port=7000,
+        port=7777,
         use_testnet=True,
     )
     Miner(key=classic_load_key("mosaic-miner0"), settings=settings).serve()
