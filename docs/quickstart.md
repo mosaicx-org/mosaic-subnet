@@ -5,7 +5,7 @@ Our netuid on commune:
 * mainnet: 14
 * testnet: 13
 
-If you want run it on testnet, add `--testnet` argument in comx cli.
+If you want run it on testnet, add `--testnet` argument after `comx`.
 
 ## Hardware Requirements
 
@@ -55,13 +55,13 @@ comx balance stake <key> <token-amount> <your_ss58_address> --netuid=<netuid>
 ### Miner Setup
 
 ```bash
-python mosaic_subnet/cli.py miner <your_commune_key> <host> <port>
+python mosaic_subnet/cli.py [--testnet] miner <your_commune_key> <host> <port>
 ```
 
 ### Validator Setup
 
 ```bash
-python mosaic_subnet/cli.py validator <your_commune_key>
+python mosaic_subnet/cli.py [--testnet] validator <your_commune_key>
 ```
 
 ### Gateway Setup
@@ -69,7 +69,7 @@ python mosaic_subnet/cli.py validator <your_commune_key>
 ATTENTION: You must be a validator in order to run gateway
 
 ```bash
-python mosaic_subnet/cli.py gateway <your_commune_key> <host> <port>
+python mosaic_subnet/cli.py [--testnet] gateway <your_commune_key> <host> <port>
 ```
 
 The docs site will be available on `http://<your-ip>:<port>/docs`.
