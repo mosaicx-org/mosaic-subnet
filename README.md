@@ -19,5 +19,5 @@ The validator will extract the embedding vectors from the text prompt and the ge
 - v1.2: Enhance scheduling algorithms to optimize user experience and service reliability for web app operations.
 - v1.3: Enable fine-tuning capabilities and decouple miners from validators through integration with a model registry.
 
-## Running
+## Guide
 Please refer to [Quick Start Guide](docs/quickstart.md)
