@@ -48,7 +48,7 @@ class Gateway(BaseValidator):
 )
 def generate_image(req: SampleInput):
     result = b""
-    for mid, module in app.m.get_queryable_miners().items():
+    for mid, module in app.m.get_top_weights_miners(3).items():
         result = app.m.get_miner_generation(module, req)
         if result:
             break
