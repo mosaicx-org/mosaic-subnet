@@ -22,11 +22,11 @@ from mosaic_subnet.validator.model import CLIP
 from mosaic_subnet.base.utils import get_netuid
 from mosaic_subnet.base import SampleInput, BaseValidator
 from mosaic_subnet.validator.dataset import ValidationDataset
-from mosaic_subnet.validator.math import threshold_sigmoid_reward_distribution
+from mosaic_subnet.validator.sigmoid import threshold_sigmoid_reward_distribution
 
 
 class Validator(BaseValidator, Module):
-    def __init__(self, key: Keypair, settings: ValidatorSettings = None) -> None:
+    def __init__(self, key: Keypair, settings: ValidatorSettings | None = None) -> None:
         super().__init__()
         self.settings = settings or ValidatorSettings()
         self.key = key
@@ -80,7 +80,7 @@ class Validator(BaseValidator, Module):
         # Iterate over the items in the score_dict
         for uid, score in adjsuted_to_sigmoid.items():
             # Calculate the normalized weight as an integer
-            weight = int(score / scores * 10)
+            weight = int(score * 1000 / scores)
 
             # Add the weighted score to the new dictionary
             weighted_scores[uid] = weight
