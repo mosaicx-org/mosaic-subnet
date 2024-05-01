@@ -54,13 +54,13 @@ def miner(
     commune_key: Annotated[
         str, typer.Argument(help="Name of the key present in `~/.commune/key`")
     ],
-    host: Annotated[str, typer.Argument(help="host")],
+    ip: Annotated[str, typer.Argument(help="the public ip you've registered")],
     port: Annotated[int, typer.Argument(help="port")],
     testnet: bool = False,
 ):
     from mosaic_subnet.miner import Miner, MinerSettings
 
-    settings = MinerSettings(use_testnet=ctx.obj.use_testnet, host=host, port=port)
+    settings = MinerSettings(use_testnet=ctx.obj.use_testnet, host=ip, port=port)
     miner = Miner(key=classic_load_key(commune_key), settings=settings)
     miner.serve()
 

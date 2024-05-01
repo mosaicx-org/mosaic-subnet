@@ -42,7 +42,7 @@ poetry install
 comx module register <module-name> <key> --netuid=<netuid> --ip=<ip> --port=<port>
 ```
 
-IP should be your external ip.
+IP should be your public ip.
 
 ## Stake (validator required)
 
@@ -55,7 +55,7 @@ comx balance stake <key> <token-amount> <your_ss58_address> --netuid=<netuid>
 ### Miner Setup
 
 ```bash
-python mosaic_subnet/cli.py [--testnet] miner <your_commune_key> <host> <port>
+python mosaic_subnet/cli.py [--testnet] miner <your_commune_key> <ip> <port>
 ```
 
 ### Validator Setup
