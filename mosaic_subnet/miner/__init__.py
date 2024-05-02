@@ -11,10 +11,8 @@ from mosaic_subnet.miner.model import DiffUsers
 from mosaic_subnet.miner._config import MinerSettings
 
 import sys
-import logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-stream_handler = logging.StreamHandler(sys.stdout)
+
+from loguru import logger
 
 class Miner(DiffUsers):
     def __init__(self, key: Keypair, settings: MinerSettings = None) -> None:
