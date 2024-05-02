@@ -1,3 +1,6 @@
+![image](https://github.com/mosaicx-org/mosaic-subnet/assets/48199614/97ecdea5-7c35-4536-9014-ac85da575974)
+
+
 # Mosaic Subnet
 Mosaic is an open platform for generative artificial intelligence. Users can generate images from natural language descriptions using modules provided by [Commune AI](https://communeai.org/).
 
@@ -13,11 +16,12 @@ Within the Mosaic subnet, two distinct task categories exist:
 
 The validator will extract the embedding vectors from the text prompt and the generated image, then employ cosine similarity to assess the likeness between the two embedding vectors. This allows us to ascertain whether the generated image aligns with the descriptive content of the prompt text.
 
-## Roadmap
-- v1.0: Implement a foundational image generation network, integrating cosine similarity for image-text validation and reward distribution.
-- v1.1: Introduce support for Web + API + Bot, enabling direct utilization of subnet model outputs through a web interface.
-- v1.2: Enhance scheduling algorithms to optimize user experience and service reliability for web app operations.
-- v1.3: Enable fine-tuning capabilities and decouple miners from validators through integration with a model registry.
 
 ## Guide
-Please refer to [Quick Start Guide](docs/quickstart.md)
+For guidance for miners and validators, please refer to. [Quick Start Guide](docs/quickstart.md)
+
+## Links
+- Website: [mosaicx.org](https://mosaicx.org/)
+- Docs: [docs.mosaicx.org](https://docs.mosaicx.org/)
+- Leader Board: [leaderboard.mosaicx.org](https://leaderboard.mosaicx.org/)
+- GitHub: [mosaic-subnet](https://github.com/mosaicx-org/mosaic-subnet)
