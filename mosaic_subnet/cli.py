@@ -1,8 +1,9 @@
 from typing import Annotated
 from dataclasses import dataclass
+import sys
 
 import typer
-
+from loguru import logger
 from communex.compat.key import classic_load_key
 
 cli = typer.Typer()
@@ -19,11 +20,18 @@ def main(
     testnet: Annotated[
         bool, typer.Option(envvar="COMX_USE_TESTNET", help="Use testnet endpoints.")
     ] = False,
+    log_level: str = "INFO"
 ):
+    logger.remove()
+    logger.add(
+        sys.stdout,
+        level=log_level.upper()
+    )
+
     if testnet:
-        print("use testnet")
+        logger.info("use testnet")
     else:
-        print("use mainnet")
+        logger.info("use mainnet")
 
     ctx.obj = ExtraCtxData(use_testnet=testnet)
 

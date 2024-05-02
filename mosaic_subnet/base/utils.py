@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass, asdict
 
+from loguru import logger
+
 from communex.client import CommuneClient
 from substrateinterface import Keypair
 from communex.module.client import ModuleClient
@@ -21,7 +23,7 @@ def get_netuid(client: CommuneClient, subnet_name: str = "mosaic"):
     subnets = client.query_map_subnet_names()
     for netuid, name in subnets.items():
         if name == subnet_name:
-            print("use netuid:", netuid)
+            logger.info("use netuid:", netuid)
             return netuid
     raise ValueError(f"Subnet {subnet_name} not found")
 

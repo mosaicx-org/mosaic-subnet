@@ -1,5 +1,10 @@
 import asyncio
 import base64
+from typing import Optional
+import heapq
+from operator import itemgetter
+
+from loguru import logger
 
 from communex.client import CommuneClient
 from substrateinterface import Keypair
@@ -8,10 +13,7 @@ from communex.compat.key import check_ss58_address
 from communex.types import Ss58Address
 from .utils import get_ip_port
 from pydantic import BaseModel
-from typing import Optional
 
-import heapq
-from operator import itemgetter
 
 
 class SampleInput(BaseModel):
@@ -33,7 +35,7 @@ class BaseValidator:
         try:
             connection, miner_key = miner_info
             module_ip, module_port = connection
-            print("call", module_ip, module_port)
+            logger.debug("call", module_ip, module_port)
             client = ModuleClient(host=module_ip, port=int(module_port), key=self.key)
             result = asyncio.run(
                 client.call(
@@ -45,7 +47,7 @@ class BaseValidator:
             )
             return base64.b64decode(result)
         except Exception as e:
-            print(e)
+            logger.error(e)
             return None
 
     def get_queryable_miners(self):
@@ -75,7 +77,7 @@ class BaseValidator:
             for uid, score in weight_list:
                 v = weight_map.get(uid, 0)
                 weight_map[uid] = v + score
-        print(weight_map)
+        logger.debug(weight_map)
         candidates = heapq.nlargest(k, weight_map.items(), key=itemgetter(1))
 
         modules_addresses = self.c_client.query_map_address(self.netuid)

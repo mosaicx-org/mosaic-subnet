@@ -3,9 +3,11 @@ import asyncio
 import concurrent.futures
 import time
 from functools import partial
-
 from dataclasses import dataclass
+
+from loguru import logger
 from PIL import UnidentifiedImageError
+
 from communex.module.module import Module
 from communex.client import CommuneClient
 from communex.module.client import ModuleClient
@@ -49,7 +51,7 @@ class Validator(BaseValidator, Module):
         modules_info = self.get_queryable_miners()
 
         input = self.get_validate_input()
-        print("input:", input)
+        logger.debug("input:", input)
         get_miner_generation = partial(self.get_miner_generation, input=input)
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             it = executor.map(get_miner_generation, modules_info.values())
@@ -58,19 +60,19 @@ class Validator(BaseValidator, Module):
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
             miner_answer = miner_response
             if not miner_answer:
-                print(f"Skipping miner {uid} that didn't answer")
+                logger.debug(f"Skipping miner {uid} that didn't answer")
                 continue
             score = self.calculate_score(miner_answer, input.prompt)
             score_dict[uid] = score
 
         if not score_dict:
-            print("score_dict empty, skip set weights")
+            logger.info("score_dict empty, skip set weights")
             return
-        print("original scores:", score_dict)
+        logger.debug("original scores:", score_dict)
         adjsuted_to_sigmoid = threshold_sigmoid_reward_distribution(
             score_dict=score_dict
         )
-        print("sigmoid scores:", adjsuted_to_sigmoid)
+        logger.debug("sigmoid scores:", adjsuted_to_sigmoid)
         # Create a new dictionary to store the weighted scores
         weighted_scores: dict[int, int] = {}
 
@@ -87,16 +89,20 @@ class Validator(BaseValidator, Module):
 
         # filter out 0 weights
         weighted_scores = {k: v for k, v in weighted_scores.items() if v != 0}
-        print("weighted scores:", weighted_scores)
+        logger.debug("weighted scores:", weighted_scores)
+        if not weighted_scores:
+            logger.info("weighted_scores empty, skip set weights")
+            return
         try:
             uids = list(weighted_scores.keys())
             weights = list(weighted_scores.values())
-            print(f"Settings weights for the following uids: {uids}")
+            logger.info("Setting weights for {count} uids", count=len(uids))
+            logger.debug(f"Setting weights for the following uids: {uids}")
             self.c_client.vote(
                 key=self.key, uids=uids, weights=weights, netuid=self.netuid
             )
         except Exception as e:
-            print("ERROR", e)
+            logger.error(e)
 
     def get_validate_input(self):
         return SampleInput(
@@ -112,7 +118,7 @@ class Validator(BaseValidator, Module):
             elapsed = time.time() - start_time
             if elapsed < settings.iteration_interval:
                 sleep_time = settings.iteration_interval - elapsed
-                print(f"Sleeping for {sleep_time}")
+                logger.info(f"Sleeping for {sleep_time}")
                 time.sleep(sleep_time)
 
 

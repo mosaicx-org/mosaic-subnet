@@ -421,7 +421,7 @@ name = "communex"
 version = "0.1.18"
 description = "A library for Commune network focused on simplicity"
 optional = false
-python-versions = "<4.0,>=3.10"
+python-versions = ">=3.10,<4.0"
 files = [
     {file = "communex-0.1.18-py3-none-any.whl", hash = "sha256:94574f48d846e35633486443d3e93e8f8965e853426da282eaa2c73b873c952a"},
     {file = "communex-0.1.18.tar.gz", hash = "sha256:828a31dcbbbecc0f7d79675df557ef3595e1185a01160522733f51b32bb4d6eb"},
@@ -655,7 +655,7 @@ name = "ecdsa"
 version = "0.19.0"
 description = "ECDSA cryptographic signature library (pure python)"
 optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.6"
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "ecdsa-0.19.0-py2.py3-none-any.whl", hash = "sha256:2cea9b88407fdac7bbeca0833b189e4c9c53f2ef1e1eaa29f6224dbc809b707a"},
     {file = "ecdsa-0.19.0.tar.gz", hash = "sha256:60eaad1199659900dd0af521ed462b793bbdf867432b3948e87416ae4caf6bf8"},
@@ -691,7 +691,7 @@ name = "eth-keys"
 version = "0.5.1"
 description = "eth-keys: Common API for Ethereum key operations"
 optional = false
-python-versions = "<4,>=3.8"
+python-versions = ">=3.8, <4"
 files = [
     {file = "eth_keys-0.5.1-py3-none-any.whl", hash = "sha256:ad13d920a2217a49bed3a1a7f54fb0980f53caf86d3bbab2139fd3330a17b97e"},
     {file = "eth_keys-0.5.1.tar.gz", hash = "sha256:2b587e4bbb9ac2195215a7ab0c0fb16042b17d4ec50240ed670bbb8f53da7a48"},
@@ -712,7 +712,7 @@ name = "eth-typing"
 version = "4.2.1"
 description = "eth-typing: Common type annotations for ethereum python packages"
 optional = false
-python-versions = "<4,>=3.8"
+python-versions = ">=3.8, <4"
 files = [
     {file = "eth_typing-4.2.1-py3-none-any.whl", hash = "sha256:0e05be775e9a7b9aa66a1520fce41adacdf47680fb4344cfb4f4a0e7eab752b2"},
     {file = "eth_typing-4.2.1.tar.gz", hash = "sha256:0e7108fdc937f4b5d6352f71591f694f0b0a62162cddeb9bbc9b157fd700ba3f"},
@@ -1042,7 +1042,7 @@ testing = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)",
 [[package]]
 name = "intel-openmp"
 version = "2021.4.0"
-description = "Intel OpenMP* Runtime Library"
+description = "Intel® OpenMP* Runtime Library"
 optional = false
 python-versions = "*"
 files = [
@@ -1080,6 +1080,24 @@ files = [
     {file = "keylimiter-0.1.5-py3-none-any.whl", hash = "sha256:08d0f7b05133e3e2b7f7aab8e023a8881deb37ec213a3ff270d79876658ed2e5"},
     {file = "keylimiter-0.1.5.tar.gz", hash = "sha256:6655240c15d1aee6acf26bd66bb1ae6c5dfd014e287f9c9c563dcfeacfc8fc81"},
 ]
+
+[[package]]
+name = "loguru"
+version = "0.7.2"
+description = "Python logging made (stupidly) simple"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "loguru-0.7.2-py3-none-any.whl", hash = "sha256:003d71e3d3ed35f0f8984898359d65b79e5b21943f78af86aa5491210429b8eb"},
+    {file = "loguru-0.7.2.tar.gz", hash = "sha256:e671a53522515f34fd406340ee968cb9ecafbc4b36c679da03c18fd8d0bd51ac"},
+]
+
+[package.dependencies]
+colorama = {version = ">=0.3.4", markers = "sys_platform == \"win32\""}
+win32-setctime = {version = ">=1.0.0", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+dev = ["Sphinx (==7.2.5)", "colorama (==0.4.5)", "colorama (==0.4.6)", "exceptiongroup (==1.1.3)", "freezegun (==1.1.0)", "freezegun (==1.2.2)", "mypy (==v0.910)", "mypy (==v0.971)", "mypy (==v1.4.1)", "mypy (==v1.5.1)", "pre-commit (==3.4.0)", "pytest (==6.1.2)", "pytest (==7.4.0)", "pytest-cov (==2.12.1)", "pytest-cov (==4.1.0)", "pytest-mypy-plugins (==1.9.3)", "pytest-mypy-plugins (==3.0.0)", "sphinx-autobuild (==2021.3.14)", "sphinx-rtd-theme (==1.3.0)", "tox (==3.27.1)", "tox (==4.11.0)"]
 
 [[package]]
 name = "markdown-it-py"
@@ -2700,7 +2718,7 @@ name = "substrate-interface"
 version = "1.7.8"
 description = "Library for interfacing with a Substrate node"
 optional = false
-python-versions = "<4,>=3.7"
+python-versions = ">=3.7, <4"
 files = [
     {file = "substrate-interface-1.7.8.tar.gz", hash = "sha256:9a8e21f18db8ce5bb117e2343028fd9f7eebfab6f1e12b05f13075a5d90d6ed5"},
     {file = "substrate_interface-1.7.8-py3-none-any.whl", hash = "sha256:90917f1ad435a11b2562577bbc5dd5d5970744287d8fc2b23b75780d682284e7"},
@@ -3259,6 +3277,20 @@ optional = ["python-socks", "wsaccel"]
 test = ["websockets"]
 
 [[package]]
+name = "win32-setctime"
+version = "1.1.0"
+description = "A small Python utility to set file creation time on Windows"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
+    {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
+]
+
+[package.extras]
+dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
+
+[[package]]
 name = "xxhash"
 version = "3.4.1"
 description = "Python binding for xxHash"
@@ -3496,4 +3528,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9ed5919fbb62873e5323bebdc6553b85c246f75e6088d469183b2b4492a3b21e"
+content-hash = "4c4e28b5fffe3936bd5701aee8c8ee062a1b38911f2277427d58a9b627e77627"

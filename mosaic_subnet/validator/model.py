@@ -3,6 +3,7 @@ from io import BytesIO
 import torch
 from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
+from loguru import logger
 
 from communex.module.module import Module, endpoint
 
@@ -11,7 +12,7 @@ class CLIP(Module):
     def __init__(self, model_name: str = "openai/clip-vit-base-patch32") -> None:
         super().__init__()
         self.model_name = model_name
-        print(self.model_name)
+        logger.info(self.model_name)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = CLIPModel.from_pretrained(model_name).to(self.device)
         self.processor = CLIPProcessor.from_pretrained(model_name)
