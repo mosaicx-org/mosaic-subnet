@@ -1,3 +1,7 @@
+import random
+import time
+import threading
+
 from communex.client import CommuneClient
 from communex.types import Ss58Address
 from communex._common import get_node_url
@@ -8,6 +12,7 @@ from fastapi.responses import Response
 from communex.compat.key import classic_load_key
 from pydantic import BaseModel
 from typing import Optional
+from loguru import logger
 
 import uvicorn
 
@@ -39,6 +44,25 @@ class Gateway(BaseValidator):
         self.key = key
         self.netuid = get_netuid(self.c_client)
         self.call_timeout = self.settings.call_timeout
+        self.top_miners = {}
+        self.sync()
+
+    def sync(self):
+        logger.info("fetch top miners")
+        self.top_miners = self.get_top_weights_miners(16)
+
+    def sync_loop(self):
+        while True:
+            time.sleep(300)
+            self.sync()
+
+    def start_sync_loop(self):
+        logger.info("start sync loop")
+        self._loop_thread = threading.Thread(target=self.sync_loop, daemon=True)
+        self._loop_thread.start()
+
+    def get_top_miners(self):
+        return self.top_miners
 
 
 @app.post(
@@ -48,7 +72,10 @@ class Gateway(BaseValidator):
 )
 def generate_image(req: SampleInput):
     result = b""
-    for mid, module in app.m.get_top_weights_miners(3).items():
+    for i in range(3):
+        top_miners = app.m.get_top_miners()
+        mid = random.choice(list(top_miners.keys()))
+        module = top_miners[mid]
         result = app.m.get_miner_generation(module, req)
         if result:
             break
@@ -62,4 +89,5 @@ if __name__ == "__main__":
         use_testnet=True,
     )
     app.m = Gateway(key=classic_load_key("mosaic-validator0"), settings=settings)
+    app.m.start_sync_loop()
     uvicorn.run(app=app, host=settings.host, port=settings.port)

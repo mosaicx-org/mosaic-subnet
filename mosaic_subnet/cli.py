@@ -20,13 +20,10 @@ def main(
     testnet: Annotated[
         bool, typer.Option(envvar="COMX_USE_TESTNET", help="Use testnet endpoints.")
     ] = False,
-    log_level: str = "INFO"
+    log_level: str = "INFO",
 ):
     logger.remove()
-    logger.add(
-        sys.stdout,
-        level=log_level.upper()
-    )
+    logger.add(sys.stdout, level=log_level.upper())
 
     if testnet:
         logger.info("use testnet")
@@ -91,6 +88,7 @@ def gateway(
         use_testnet=ctx.obj.use_testnet, host=host, port=port, call_timeout=call_timeout
     )
     app.m = Gateway(key=classic_load_key(commune_key), settings=settings)
+    app.m.start_sync_loop()
     uvicorn.run(app=app, host=settings.host, port=settings.port)
 
 
