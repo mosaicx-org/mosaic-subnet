@@ -55,8 +55,9 @@ comx balance stake <key> <token-amount> <your_ss58_address> --netuid=<netuid>
 ### Miner Setup
 
 ```bash
-python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <ip> <port>
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <host> <port>
 ```
+host should be `0.0.0.0` so it allows all the incoming requests with other ip and for the local testing use `127.0.0.1`
 
 ### Validator Setup
 
