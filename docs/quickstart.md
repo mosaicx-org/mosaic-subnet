@@ -75,7 +75,7 @@ python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] gateway <your_commune
 The docs site will be available on `http://<your-ip>:<port>/docs`.
 
 ## Docker Setup
-We recommend you to use Docker to run the miner and validator. The deployment in this method can make the service more stable and enable automatic upgrades.
+We recommend you to use Docker to run the miner and validator. The deployment in this method can make the services more robust and enable automatic upgrades.
 
 ### Prerequisites
 You need to install the following components to meet the requirements for running the mosaic containers.
@@ -90,7 +90,7 @@ docker run --gpus=all -d --network host --restart always \
 -v $HOME/.cache/huggingface:/root/.cache/huggingface \
 --name mosaic-miner \
 mos4ic/mosaic-subnet:latest \
-python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <ip> <port>
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <host> <port>
 ```
 
 
@@ -101,7 +101,7 @@ docker run --gpus=all -d --network host --restart always \
 -v $HOME/.cache/huggingface:/root/.cache/huggingface \
 --name mosaic-validator \
 mos4ic/mosaic-subnet:latest \
-python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <ip> <port>
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <host> <port>
 ```
 
 ### Enable auto upgrade
