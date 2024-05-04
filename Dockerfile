@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
 ENV PYTHONFAULTHANDLER=1 \
 PYTHONUNBUFFERED=1 \
@@ -12,12 +12,16 @@ POETRY_CACHE_DIR='/var/cache/pypoetry' \
 POETRY_HOME='/usr/local' \
 POETRY_VERSION=1.8.2
 
+RUN apt-get update && \
+    apt-get install -y git curl python3-pip python3-dev python-is-python3 && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR /code
 COPY poetry.lock pyproject.toml /code/
 
-RUN poetry install --only=main --no-interaction --no-ansi
+RUN poetry install --only=main --no-interaction --no-ansi --no-root
 
 COPY . /code
 

@@ -51,7 +51,6 @@ comx balance stake <key> <token-amount> <your_ss58_address> --netuid=<netuid>
 ```
 
 ## Setup
-
 ### Miner Setup
 
 ```bash
@@ -74,5 +73,41 @@ python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] gateway <your_commune
 
 The docs site will be available on `http://<your-ip>:<port>/docs`.
 
+## Docker Setup
+We recommend you to use Docker to run the miner and validator. The deployment in this method can make the service more stable and enable automatic upgrades.
+
+### Prerequisites
+You need to install the following components to meet the requirements for running the mosaic containers.
+* Docker https://docs.docker.com/engine/install/ubuntu/
+* NVIDIA GPU Driver
+* NVIDIA container toolkit https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+### Setup miner with docker
+```bash
+docker run --gpus=all -d --network host --restart always \
+-v $HOME/.commune:/root/.commune \
+-v $HOME/.cache/huggingface:/root/.cache/huggingface \
+--name mosaic-miner \
+mos4ic/mosaic-subnet:latest \
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <ip> <port>
+```
 
 
+### Setup validator with docker
+```bash
+docker run --gpus=all -d --network host --restart always \
+-v $HOME/.commune:/root/.commune \
+-v $HOME/.cache/huggingface:/root/.cache/huggingface \
+--name mosaic-validator \
+mos4ic/mosaic-subnet:latest \
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <ip> <port>
+```
+
+### Enable auto upgrade
+This component will periodically check the latest mosaic docker image, pull it and restart the running containers with the new image.
+```bash
+docker run -d \
+--name watchtower \
+-v /var/run/docker.sock:/var/run/docker.sock \
+containrrr/watchtower --interval 300 mosaic-miner mosaic-validator 
+```
