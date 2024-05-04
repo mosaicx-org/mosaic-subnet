@@ -10,6 +10,6 @@ docker-push:
 	docker push $(IMAGE):$(VERSION)
 
 .PHONY: docker-push-latest
-docker-push:
+docker-push-latest:
 	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	docker push $(IMAGE):latest
