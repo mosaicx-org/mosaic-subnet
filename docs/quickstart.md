@@ -8,7 +8,7 @@ Our netuid on commune:
 If you want run it on testnet, add `--testnet` argument after `comx`.
 
 ## Hardware Requirements
-
+* Memory: >= 16GB
 * GPU: >= 16GB VRAM
 * Storage: >= 50GB
 
