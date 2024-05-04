@@ -1,6 +1,9 @@
 from typing import Annotated
 from dataclasses import dataclass
 import sys
+import os
+
+sys.path.append(os.getcwd())
 
 import typer
 from loguru import logger
@@ -59,13 +62,13 @@ def miner(
     commune_key: Annotated[
         str, typer.Argument(help="Name of the key present in `~/.commune/key`")
     ],
-    ip: Annotated[str, typer.Argument(help="the public ip you've registered")],
+    host: Annotated[str, typer.Argument(help="the public ip you've registered, you can simply put 0.0.0.0 here to allow all incoming requests")],
     port: Annotated[int, typer.Argument(help="port")],
     testnet: bool = False,
 ):
     from mosaic_subnet.miner import Miner, MinerSettings
 
-    settings = MinerSettings(use_testnet=ctx.obj.use_testnet, host=ip, port=port)
+    settings = MinerSettings(use_testnet=ctx.obj.use_testnet, host=host, port=port)
     miner = Miner(key=classic_load_key(commune_key), settings=settings)
     miner.serve()
 
