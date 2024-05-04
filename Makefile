@@ -7,6 +7,9 @@ docker-build:
 
 .PHONY: docker-push
 docker-push:
-	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	docker push $(IMAGE):$(VERSION)
+
+.PHONY: docker-push-latest
+docker-push:
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	docker push $(IMAGE):latest
