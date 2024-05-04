@@ -89,8 +89,6 @@ class BaseValidator:
 
         modules_filtered_address = get_ip_port(modules_addresses)
         for module_id, weight in candidates:
-            if module_id == 0:  # skip master
-                continue
             if modules_keys[module_id] == val_ss58:  # skip yourself
                 continue
             module_addr = modules_filtered_address.get(module_id, None)
