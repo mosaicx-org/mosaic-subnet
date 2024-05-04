@@ -101,7 +101,7 @@ docker run --gpus=all -d --network host --restart always \
 -v $HOME/.cache/huggingface:/root/.cache/huggingface \
 --name mosaic-validator \
 mos4ic/mosaic-subnet:latest \
-python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] miner <your_commune_key> <host> <port>
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] validator <your_commune_key>
 ```
 
 ### Enable auto upgrade
