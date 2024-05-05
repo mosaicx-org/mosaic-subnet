@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import sys
 import os
 
-sys.path.append(os.getcwd())
+sys.path.insert(0, os.getcwd())
 
 import typer
 from loguru import logger
@@ -62,7 +62,12 @@ def miner(
     commune_key: Annotated[
         str, typer.Argument(help="Name of the key present in `~/.commune/key`")
     ],
-    host: Annotated[str, typer.Argument(help="the public ip you've registered, you can simply put 0.0.0.0 here to allow all incoming requests")],
+    host: Annotated[
+        str,
+        typer.Argument(
+            help="the public ip you've registered, you can simply put 0.0.0.0 here to allow all incoming requests"
+        ),
+    ],
     port: Annotated[int, typer.Argument(help="port")],
     testnet: bool = False,
 ):

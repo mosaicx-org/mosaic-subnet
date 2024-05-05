@@ -3,7 +3,7 @@ import base64
 from typing import Optional
 import heapq
 from operator import itemgetter
-
+import time
 from loguru import logger
 
 from communex.client import CommuneClient
@@ -13,7 +13,6 @@ from communex.compat.key import check_ss58_address
 from communex.types import Ss58Address
 from .utils import get_ip_port
 from pydantic import BaseModel
-
 
 
 class SampleInput(BaseModel):
@@ -49,6 +48,19 @@ class BaseValidator:
         except Exception as e:
             logger.error(e)
             return None
+
+    def get_miner_generation_with_elapsed(
+        self,
+        miner_info: tuple[list[str], Ss58Address],
+        input: SampleInput,
+    ) -> bytes:
+        start = time.time()
+        try:
+            result = self.get_miner_generation(miner_info=miner_info, input=input)
+        except Exception:
+            return None, 99999
+        elapsed = time.time() - start
+        return result, elapsed
 
     def get_queryable_miners(self):
         modules_addresses = self.c_client.query_map_address(self.netuid)

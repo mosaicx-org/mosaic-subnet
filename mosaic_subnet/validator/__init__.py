@@ -52,13 +52,16 @@ class Validator(BaseValidator, Module):
 
         input = self.get_validate_input()
         logger.debug("input:", input)
-        get_miner_generation = partial(self.get_miner_generation, input=input)
+        get_miner_generation = partial(
+            self.get_miner_generation_with_elapsed, input=input
+        )
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             it = executor.map(get_miner_generation, modules_info.values())
             miner_answers = [*it]
 
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
-            miner_answer = miner_response
+            miner_answer, elapsed = miner_response
+            logger.debug(f"uid {uid} elapsed time: {elapsed}")
             if not miner_answer:
                 logger.debug(f"Skipping miner {uid} that didn't answer")
                 continue
