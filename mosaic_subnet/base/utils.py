@@ -23,7 +23,7 @@ def get_netuid(client: CommuneClient, subnet_name: str = "mosaic"):
     subnets = client.query_map_subnet_names()
     for netuid, name in subnets.items():
         if name == subnet_name:
-            logger.info("use netuid:", netuid)
+            logger.info(f"use netuid: {netuid}")
             return netuid
     raise ValueError(f"Subnet {subnet_name} not found")
 
