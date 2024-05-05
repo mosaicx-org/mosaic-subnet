@@ -30,9 +30,7 @@ class Miner(DiffUsers):
         from communex.module.server import ModuleServer
         import uvicorn
 
-        ## TODO: enable subnets_whitelist when comx update their key checking
-        # server = ModuleServer(self, self.key, subnets_whitelist=[self.netuid])
-        server = ModuleServer(self, self.key)
+        server = ModuleServer(self, self.key, subnets_whitelist=[self.netuid])
         app = server.get_fastapi_app()
         uvicorn.run(app, host=self.settings.host, port=self.settings.port)
 
