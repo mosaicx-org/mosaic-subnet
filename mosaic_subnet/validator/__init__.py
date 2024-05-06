@@ -64,18 +64,13 @@ class Validator(BaseValidator, Module):
             return
 
         logger.debug("original scores:", score_dict)
+
         normalized_scores = normalize_score(score_dict=score_dict)
         logger.debug("normalized scores:", normalized_scores)
 
-        score_sum = sum(normalized_scores.values())
-
-        weighted_scores: dict[int, int] = {}
-        for uid, score in normalized_scores.items():
-            weight = int(score * 1000 / score_sum)
-            if weight > 0:
-                weighted_scores[uid] = weight
-
+        weighted_scores = weight_score(normalized_scores)
         logger.debug("weighted scores:", weighted_scores)
+
         if not weighted_scores:
             logger.info("weighted_scores empty, skip set weights")
             return

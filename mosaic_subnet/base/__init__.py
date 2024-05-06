@@ -30,7 +30,7 @@ class BaseValidator:
         self,
         miner_info: tuple[list[str], Ss58Address],
         input: SampleInput,
-    ) -> bytes:
+    ) -> Optional[bytes]:
         try:
             connection, miner_key = miner_info
             module_ip, module_port = connection
@@ -46,7 +46,7 @@ class BaseValidator:
             )
             return base64.b64decode(result)
         except Exception as e:
-            logger.error(e)
+            logger.debug(e)
             return None
 
     def get_miner_generation_with_elapsed(

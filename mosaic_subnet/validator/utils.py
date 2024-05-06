@@ -27,3 +27,13 @@ def normalize_score(score_dict: dict[int, float], duration_dict: dict[int, float
         adjusted_scores[uid] = adjusted_score
 
     return adjusted_scores
+
+
+def weight_score(score_dict: dict[int, float]) -> dict[int, float]:
+    scores = sum(score_dict.values())
+
+    weights: dict[int, int] = {}
+    for uid, score in score_dict.items():
+        weight = int(score * 3000 / scores)
+        weights[uid] = weight
+    return weights
