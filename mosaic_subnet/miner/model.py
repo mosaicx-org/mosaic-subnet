@@ -2,6 +2,7 @@
 from io import BytesIO
 from typing import Optional
 import base64
+import threading
 
 import torch
 from diffusers import AutoPipelineForText2Image
@@ -16,6 +17,7 @@ class DiffUsers(Module):
         self.pipeline = AutoPipelineForText2Image.from_pretrained(
             model_name, torch_dtype=torch.float16, variant="fp16"
         ).to(self.device)
+        self._lock = threading.Lock()
 
     @endpoint
     def sample(
@@ -25,13 +27,14 @@ class DiffUsers(Module):
         if seed is None:
             seed = generator.seed()
         generator = generator.manual_seed(seed)
-        image = self.pipeline(
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            num_inference_steps=steps,
-            generator=generator,
-            guidance_scale=0.0
-        ).images[0]
+        with self._lock:
+            image = self.pipeline(
+                prompt=prompt,
+                negative_prompt=negative_prompt,
+                num_inference_steps=steps,
+                generator=generator,
+                guidance_scale=0.0
+            ).images[0]
         buf = BytesIO()
         image.save(buf, format="png")
         buf.seek(0)
