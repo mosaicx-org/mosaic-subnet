@@ -21,7 +21,7 @@ def normalize_score(score_dict: dict[int, float], duration_dict: dict[int, float
 
         duration = duration_dict.get(uid, 60)
 
-        if duration > 20:
+        if duration > 10:
             adjusted_score = adjusted_score * (1 - duration * 0.01)
         elif score > threshold:
             bonus = 0.5 - duration * 0.1

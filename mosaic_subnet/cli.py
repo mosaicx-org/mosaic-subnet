@@ -42,7 +42,7 @@ def validator(
     commune_key: Annotated[
         str, typer.Argument(help="Name of the key present in `~/.commune/key`")
     ],
-    call_timeout: int = 60,
+    call_timeout: int = 30,
     iteration_interval: int = 60,
 ):
     from mosaic_subnet.validator import Validator, ValidatorSettings
