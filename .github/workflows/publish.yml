@@ -1,7 +1,6 @@
-name: Docker
+name: Publish
 
 on:
-  pull_request:
   push:
     branches:
       - main
