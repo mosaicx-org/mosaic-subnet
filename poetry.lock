@@ -421,7 +421,7 @@ name = "communex"
 version = "0.1.24"
 description = "A library for Commune network focused on simplicity"
 optional = false
-python-versions = ">=3.10,<4.0"
+python-versions = "<4.0,>=3.10"
 files = [
     {file = "communex-0.1.24-py3-none-any.whl", hash = "sha256:fdf197dddb5a1e2eb8d35890a6460f2db178a7267aa4ca608f7417cb65aa9650"},
     {file = "communex-0.1.24.tar.gz", hash = "sha256:25c4381493571c8bf8b63b9b6b27b6b111dbcc4ba140e235ee2862ccfde03527"},
@@ -655,7 +655,7 @@ name = "ecdsa"
 version = "0.19.0"
 description = "ECDSA cryptographic signature library (pure python)"
 optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.6"
 files = [
     {file = "ecdsa-0.19.0-py2.py3-none-any.whl", hash = "sha256:2cea9b88407fdac7bbeca0833b189e4c9c53f2ef1e1eaa29f6224dbc809b707a"},
     {file = "ecdsa-0.19.0.tar.gz", hash = "sha256:60eaad1199659900dd0af521ed462b793bbdf867432b3948e87416ae4caf6bf8"},
@@ -691,7 +691,7 @@ name = "eth-keys"
 version = "0.5.1"
 description = "eth-keys: Common API for Ethereum key operations"
 optional = false
-python-versions = ">=3.8, <4"
+python-versions = "<4,>=3.8"
 files = [
     {file = "eth_keys-0.5.1-py3-none-any.whl", hash = "sha256:ad13d920a2217a49bed3a1a7f54fb0980f53caf86d3bbab2139fd3330a17b97e"},
     {file = "eth_keys-0.5.1.tar.gz", hash = "sha256:2b587e4bbb9ac2195215a7ab0c0fb16042b17d4ec50240ed670bbb8f53da7a48"},
@@ -712,7 +712,7 @@ name = "eth-typing"
 version = "4.2.1"
 description = "eth-typing: Common type annotations for ethereum python packages"
 optional = false
-python-versions = ">=3.8, <4"
+python-versions = "<4,>=3.8"
 files = [
     {file = "eth_typing-4.2.1-py3-none-any.whl", hash = "sha256:0e05be775e9a7b9aa66a1520fce41adacdf47680fb4344cfb4f4a0e7eab752b2"},
     {file = "eth_typing-4.2.1.tar.gz", hash = "sha256:0e7108fdc937f4b5d6352f71591f694f0b0a62162cddeb9bbc9b157fd700ba3f"},
@@ -1042,7 +1042,7 @@ testing = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)",
 [[package]]
 name = "intel-openmp"
 version = "2021.4.0"
-description = "Intel® OpenMP* Runtime Library"
+description = "Intel OpenMP* Runtime Library"
 optional = false
 python-versions = "*"
 files = [
@@ -2734,7 +2734,7 @@ name = "substrate-interface"
 version = "1.7.8"
 description = "Library for interfacing with a Substrate node"
 optional = false
-python-versions = ">=3.7, <4"
+python-versions = "<4,>=3.7"
 files = [
     {file = "substrate-interface-1.7.8.tar.gz", hash = "sha256:9a8e21f18db8ce5bb117e2343028fd9f7eebfab6f1e12b05f13075a5d90d6ed5"},
     {file = "substrate_interface-1.7.8-py3-none-any.whl", hash = "sha256:90917f1ad435a11b2562577bbc5dd5d5970744287d8fc2b23b75780d682284e7"},
@@ -3064,13 +3064,13 @@ optree = ["optree (>=0.9.1)"]
 
 [[package]]
 name = "tqdm"
-version = "4.66.2"
+version = "4.66.3"
 description = "Fast, Extensible Progress Meter"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tqdm-4.66.2-py3-none-any.whl", hash = "sha256:1ee4f8a893eb9bef51c6e35730cebf234d5d0b6bd112b0271e10ed7c24a02bd9"},
-    {file = "tqdm-4.66.2.tar.gz", hash = "sha256:6cd52cdf0fef0e0f543299cfc96fec90d7b8a7e88745f411ec33eb44d5ed3531"},
+    {file = "tqdm-4.66.3-py3-none-any.whl", hash = "sha256:4f41d54107ff9a223dca80b53efe4fb654c67efaba7f47bada3ee9d50e05bd53"},
+    {file = "tqdm-4.66.3.tar.gz", hash = "sha256:23097a41eba115ba99ecae40d06444c15d1c0c698d527a01c6c8bd1c5d0647e5"},
 ]
 
 [package.dependencies]
