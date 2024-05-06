@@ -1,0 +1,32 @@
+name: Staging
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint poetry
+          poetry install --no-interaction
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          pytest tests.py
+      - name: Run tests
+        run: poetry run python -m unittest discover -s tests/ -p '*.py'
+#      - name: Lint
+#        run: pylint $(git ls-files '*.py')

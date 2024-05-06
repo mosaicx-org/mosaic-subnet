@@ -1,30 +1,21 @@
-import time
 import asyncio
 import concurrent.futures
 import time
 from functools import partial
-from dataclasses import dataclass
 
-from loguru import logger
-from PIL import UnidentifiedImageError
-
-from communex.module.module import Module
-from communex.client import CommuneClient
-from communex.module.client import ModuleClient
-from communex.compat.key import check_ss58_address
-from communex.types import Ss58Address
-from substrateinterface import Keypair
-from communex.key import generate_keypair
 from communex._common import get_node_url
 from communex.client import CommuneClient
 from communex.compat.key import classic_load_key
+from communex.module.module import Module
+from loguru import logger
+from substrateinterface import Keypair
 
-from mosaic_subnet.validator._config import ValidatorSettings
-from mosaic_subnet.validator.model import CLIP
-from mosaic_subnet.base.utils import get_netuid
 from mosaic_subnet.base import SampleInput, BaseValidator
+from mosaic_subnet.base.utils import get_netuid
+from mosaic_subnet.validator._config import ValidatorSettings
 from mosaic_subnet.validator.dataset import ValidationDataset
-from mosaic_subnet.validator.sigmoid import threshold_sigmoid_reward_distribution
+from mosaic_subnet.validator.model import CLIP
+from mosaic_subnet.validator.utils import normalize_score
 
 
 class Validator(BaseValidator, Module):
@@ -71,27 +62,19 @@ class Validator(BaseValidator, Module):
         if not score_dict:
             logger.info("score_dict empty, skip set weights")
             return
+
         logger.debug("original scores:", score_dict)
-        adjsuted_to_sigmoid = threshold_sigmoid_reward_distribution(
-            score_dict=score_dict
-        )
-        logger.debug("sigmoid scores:", adjsuted_to_sigmoid)
-        # Create a new dictionary to store the weighted scores
+        normalized_scores = normalize_score(score_dict=score_dict)
+        logger.debug("normalized scores:", normalized_scores)
+
+        score_sum = sum(normalized_scores.values())
+
         weighted_scores: dict[int, int] = {}
+        for uid, score in normalized_scores.items():
+            weight = int(score * 1000 / score_sum)
+            if weight > 0:
+                weighted_scores[uid] = weight
 
-        # Calculate the sum of all inverted scores
-        scores = sum(adjsuted_to_sigmoid.values())
-
-        # Iterate over the items in the score_dict
-        for uid, score in adjsuted_to_sigmoid.items():
-            # Calculate the normalized weight as an integer
-            weight = int(score * 1000 / scores)
-
-            # Add the weighted score to the new dictionary
-            weighted_scores[uid] = weight
-
-        # filter out 0 weights
-        weighted_scores = {k: v for k, v in weighted_scores.items() if v != 0}
         logger.debug("weighted scores:", weighted_scores)
         if not weighted_scores:
             logger.info("weighted_scores empty, skip set weights")
@@ -100,7 +83,7 @@ class Validator(BaseValidator, Module):
             uids = list(weighted_scores.keys())
             weights = list(weighted_scores.values())
             logger.info("Setting weights for {count} uids", count=len(uids))
-            logger.debug(f"Setting weights for the following uids: {uids}")
+            logger.debug(f"Setting weights for the following uids: {weighted_scores}")
             self.c_client.vote(
                 key=self.key, uids=uids, weights=weights, netuid=self.netuid
             )
@@ -110,7 +93,7 @@ class Validator(BaseValidator, Module):
     def get_validate_input(self):
         return SampleInput(
             prompt=self.dataset.random_prompt(),
-            steps=2,
+            steps=1,
         )
 
     def validation_loop(self) -> None:

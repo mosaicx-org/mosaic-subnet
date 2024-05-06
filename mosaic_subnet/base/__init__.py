@@ -18,7 +18,7 @@ from pydantic import BaseModel
 class SampleInput(BaseModel):
     prompt: str
     negative_prompt: str = ""
-    steps: int = 10
+    steps: int = 1
     seed: Optional[int] = None
 
 
