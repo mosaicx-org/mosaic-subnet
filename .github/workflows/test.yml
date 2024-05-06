@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +21,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint poetry
           poetry install --no-interaction
-      - name: Test with pytest
-        run: |
-          pip install pytest
-          pytest tests.py
       - name: Run tests
         run: poetry run python -m unittest discover -s tests/ -p '*.py'
 #      - name: Lint
