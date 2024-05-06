@@ -34,7 +34,7 @@ class BaseValidator:
         try:
             connection, miner_key = miner_info
             module_ip, module_port = connection
-            logger.debug("call", module_ip, module_port)
+            logger.debug(f"Call {miner_key} - {module_ip}:{module_port}")
             client = ModuleClient(host=module_ip, port=int(module_port), key=self.key)
             result = asyncio.run(
                 client.call(
@@ -46,14 +46,14 @@ class BaseValidator:
             )
             return base64.b64decode(result)
         except Exception as e:
-            logger.debug(e)
+            logger.debug(f"Call error: {e}")
             return None
 
     def get_miner_generation_with_elapsed(
         self,
         miner_info: tuple[list[str], Ss58Address],
         input: SampleInput,
-    ) -> bytes:
+    ) -> [Optional[bytes], float]:
         start = time.time()
         try:
             result = self.get_miner_generation(miner_info=miner_info, input=input)

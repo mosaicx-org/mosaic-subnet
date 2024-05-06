@@ -19,8 +19,11 @@ def normalize_score(score_dict: dict[int, float], duration_dict: dict[int, float
         reward_ratio = sigmoid(normalized_score)
         adjusted_score = low_reward + (high_reward - low_reward) * reward_ratio
 
-        if score > threshold:
-            duration = duration_dict.get(uid, 5)
+        duration = duration_dict.get(uid, 60)
+
+        if duration > 20:
+            adjusted_score = adjusted_score * (1 - duration * 0.01)
+        elif score > threshold:
             bonus = 0.5 - duration * 0.1
             if bonus > 0:
                 adjusted_score = adjusted_score * (1 + bonus)

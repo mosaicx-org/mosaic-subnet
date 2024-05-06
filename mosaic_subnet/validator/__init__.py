@@ -15,7 +15,7 @@ from mosaic_subnet.base.utils import get_netuid
 from mosaic_subnet.validator._config import ValidatorSettings
 from mosaic_subnet.validator.dataset import ValidationDataset
 from mosaic_subnet.validator.model import CLIP
-from mosaic_subnet.validator.utils import normalize_score
+from mosaic_subnet.validator.utils import normalize_score, weight_score
 
 
 class Validator(BaseValidator, Module):
@@ -39,6 +39,7 @@ class Validator(BaseValidator, Module):
 
     async def validate_step(self):
         score_dict = dict()
+        duration_dict = dict()
         modules_info = self.get_queryable_miners()
 
         input = self.get_validate_input()
@@ -52,25 +53,33 @@ class Validator(BaseValidator, Module):
 
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
             miner_answer, elapsed = miner_response
-            logger.debug(f"uid {uid} elapsed time: {elapsed}")
             if not miner_answer:
-                logger.debug(f"Skipping miner {uid} that didn't answer")
+                logger.debug(f"Skipping miner {uid}: no answer")
                 continue
             score = self.calculate_score(miner_answer, input.prompt)
+            if score == 0:
+                logger.debug(f"Skipping miner {uid}: score is 0")
+                continue
+            logger.debug(f"uid {uid}, score: {score}, elapsed time: {elapsed}")
             score_dict[uid] = score
+            duration_dict[uid] = elapsed
 
         if not score_dict:
             logger.info("score_dict empty, skip set weights")
             return
 
-        logger.debug("original scores:", score_dict)
-
-        normalized_scores = normalize_score(score_dict=score_dict)
-        logger.debug("normalized scores:", normalized_scores)
-
+        normalized_scores = normalize_score(score_dict, duration_dict)
         weighted_scores = weight_score(normalized_scores)
-        logger.debug("weighted scores:", weighted_scores)
 
+        logger.debug("scores:", zip(
+            weighted_scores.keys(),
+            score_dict.values(),
+            duration_dict.values(),
+            normalized_scores.values(),
+            weighted_scores.values(),
+        ))
+
+        weighted_scores = {k: v for k, v in weighted_scores.items() if v > 0}
         if not weighted_scores:
             logger.info("weighted_scores empty, skip set weights")
             return
