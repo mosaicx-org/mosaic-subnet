@@ -10,7 +10,7 @@ from communex.module.module import Module, endpoint
 
 
 class CLIP(Module):
-    def __init__(self, model_name: str = "openai/clip-vit-base-patch32") -> None:
+    def __init__(self, model_name: str = "laion/CLIP-ViT-L-14-laion2B-s32B-b82K") -> None:
         super().__init__()
         self.model_name = model_name
         logger.info(self.model_name)

@@ -1,0 +1,4 @@
+[MASTER]
+jobs=4
+[pre-commit-hook]
+disable=C0114,C0115,C0116
