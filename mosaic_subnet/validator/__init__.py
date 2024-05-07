@@ -71,7 +71,7 @@ class Validator(BaseValidator, Module):
         normalized_scores = normalize_score(score_dict, duration_dict)
         weighted_scores = weight_score(normalized_scores)
 
-        logger.info("scores:", zip(
+        logger.info("scores: {}", zip(
             weighted_scores.keys(),
             score_dict.values(),
             duration_dict.values(),
@@ -97,7 +97,7 @@ class Validator(BaseValidator, Module):
     def get_validate_input(self):
         return SampleInput(
             prompt=self.dataset.random_prompt(),
-            steps=1,
+            steps=4,
         )
 
     def validation_loop(self) -> None:
