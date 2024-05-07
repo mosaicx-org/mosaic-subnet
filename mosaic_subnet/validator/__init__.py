@@ -71,7 +71,7 @@ class Validator(BaseValidator, Module):
         normalized_scores = normalize_score(score_dict, duration_dict)
         weighted_scores = weight_score(normalized_scores)
 
-        logger.info("scores: {}", list(zip(
+        logger.debug("scores: {}", list(zip(
             weighted_scores.keys(),
             score_dict.values(),
             duration_dict.values(),
