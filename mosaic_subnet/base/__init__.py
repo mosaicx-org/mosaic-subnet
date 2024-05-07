@@ -1,18 +1,16 @@
 import asyncio
 import base64
-from typing import Optional
 import heapq
-from operator import itemgetter
 import time
-from loguru import logger
+from operator import itemgetter
+from typing import Optional
 
-from communex.client import CommuneClient
-from substrateinterface import Keypair
 from communex.module.client import ModuleClient
-from communex.compat.key import check_ss58_address
 from communex.types import Ss58Address
-from .utils import get_ip_port
+from loguru import logger
 from pydantic import BaseModel
+
+from .utils import get_ip_port
 
 
 class SampleInput(BaseModel):
@@ -27,9 +25,9 @@ class BaseValidator:
         self.call_timeout = 60
 
     def get_miner_generation(
-        self,
-        miner_info: tuple[list[str], Ss58Address],
-        input: SampleInput,
+            self,
+            miner_info: tuple[list[str], Ss58Address],
+            input: SampleInput,
     ) -> Optional[bytes]:
         try:
             connection, miner_key = miner_info
@@ -49,10 +47,31 @@ class BaseValidator:
             logger.debug(f"Call error: {e}")
             return None
 
+    async def get_miner_generation_async(
+            self,
+            miner_info: tuple[list[str], Ss58Address],
+            input: SampleInput,
+    ) -> Optional[bytes]:
+        try:
+            connection, miner_key = miner_info
+            module_ip, module_port = connection
+            logger.debug(f"Call {miner_key} - {module_ip}:{module_port}")
+            client = ModuleClient(host=module_ip, port=int(module_port), key=self.key)
+            result = await client.call(
+                fn="sample",
+                target_key=miner_key,
+                params=input.model_dump(),
+                timeout=self.call_timeout,
+            )
+            return base64.b64decode(result)
+        except Exception as e:
+            logger.debug(f"Call error: {e}")
+            return None
+
     def get_miner_generation_with_elapsed(
-        self,
-        miner_info: tuple[list[str], Ss58Address],
-        input: SampleInput,
+            self,
+            miner_info: tuple[list[str], Ss58Address],
+            input: SampleInput,
     ) -> [Optional[bytes], float]:
         start = time.time()
         try:

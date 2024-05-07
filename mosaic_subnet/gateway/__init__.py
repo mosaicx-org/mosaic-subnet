@@ -1,27 +1,23 @@
+import asyncio
 import random
-import time
 import threading
+import time
 
-from communex.client import CommuneClient
-from communex.types import Ss58Address
+import uvicorn
 from communex._common import get_node_url
-from substrateinterface import Keypair
+from communex.client import CommuneClient
+from communex.compat.key import classic_load_key
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from communex.compat.key import classic_load_key
-from pydantic import BaseModel
-from typing import Optional
 from loguru import logger
+from substrateinterface import Keypair
 
-import uvicorn
-
+from mosaic_subnet.base import SampleInput, BaseValidator
 from mosaic_subnet.base.utils import (
     get_netuid,
 )
-from mosaic_subnet.base import SampleInput, BaseValidator
 from mosaic_subnet.gateway._config import GatewaySettings
-
 
 app = FastAPI()
 
@@ -48,12 +44,13 @@ class Gateway(BaseValidator):
         self.sync()
 
     def sync(self):
-        logger.info("fetch top miners")
+        logger.info("fetching top miners...")
         self.top_miners = self.get_top_weights_miners(16)
+        logger.info("top miners: {}", self.top_miners)
 
     def sync_loop(self):
         while True:
-            time.sleep(300)
+            time.sleep(60)
             self.sync()
 
     def start_sync_loop(self):
@@ -70,16 +67,15 @@ class Gateway(BaseValidator):
     responses={200: {"content": {"image/png": {}}}},
     response_class=Response,
 )
-def generate_image(req: SampleInput):
-    result = b""
-    for i in range(3):
-        top_miners = app.m.get_top_miners()
-        mid = random.choice(list(top_miners.keys()))
-        module = top_miners[mid]
-        result = app.m.get_miner_generation(module, req)
+async def generate_image(req: SampleInput):
+    top_miners = list(app.m.get_top_miners().values())
+    top_miners = random.sample(top_miners, 5)
+    tasks = [app.m.get_miner_generation_async(miner_info, req) for miner_info in top_miners]
+    for future in asyncio.as_completed(tasks):
+        result = await future
         if result:
-            break
-    return Response(content=result, media_type="image/png")
+            return Response(content=result, media_type="image/png")
+    return Response(content=b"", media_type="image/png")
 
 
 if __name__ == "__main__":
