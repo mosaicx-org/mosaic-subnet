@@ -27,8 +27,7 @@ class CLIP(Module):
         inputs["attention_mask"] = inputs["attention_mask"].to(self.device)
         inputs["pixel_values"] = inputs["pixel_values"].to(self.device)
         outputs = self.model(**inputs)
-        score = outputs.logits_per_image.sum().tolist() / 100
-        return score
+        return outputs.logits_per_image.sum().tolist()
 
     def get_metadata(self) -> dict:
         return {"model": self.model_name}
