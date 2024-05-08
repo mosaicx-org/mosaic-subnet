@@ -1,7 +1,13 @@
 import re
+from dataclasses import dataclass, asdict
+
+from loguru import logger
 
 from communex.client import CommuneClient
-from loguru import logger
+from substrateinterface import Keypair
+from communex.module.client import ModuleClient
+from communex.compat.key import check_ss58_address
+from communex.types import Ss58Address
 
 IP_REGEX = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+")
 
@@ -17,7 +23,7 @@ def get_netuid(client: CommuneClient, subnet_name: str = "mosaic"):
     subnets = client.query_map_subnet_names()
     for netuid, name in subnets.items():
         if name == subnet_name:
-            logger.info(f"use netuid: {netuid}")
+            logger.info("use netuid:", netuid)
             return netuid
     raise ValueError(f"Subnet {subnet_name} not found")
 

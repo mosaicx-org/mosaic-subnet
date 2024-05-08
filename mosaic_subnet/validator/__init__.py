@@ -25,7 +25,6 @@ from pydantic import BaseModel
 
 
 class WeightHistory(BaseModel):
-    step: int
     time: datetime
     data: List
 
@@ -51,7 +50,7 @@ class Validator(BaseValidator, Module):
         except Exception:
             return 0
 
-    async def validate_step(self, step: int):
+    async def validate_step(self):
         score_dict = dict()
         duration_dict = dict()
         modules_info = self.get_queryable_miners()
@@ -97,7 +96,6 @@ class Validator(BaseValidator, Module):
         logger.debug("scores: {}", weight_data)
         self.weights_histories.append(
             WeightHistory(
-                step=step,
                 time=datetime.now(),
                 data=weight_data,
             )
@@ -126,16 +124,14 @@ class Validator(BaseValidator, Module):
 
     def validation_loop(self) -> None:
         settings = self.settings
-        step = 0
         while True:
             start_time = time.time()
-            asyncio.run(self.validate_step(step=step))
+            asyncio.run(self.validate_step())
             elapsed = time.time() - start_time
             if elapsed < settings.iteration_interval:
                 sleep_time = settings.iteration_interval - elapsed
                 logger.info(f"Sleeping for {sleep_time}")
                 time.sleep(sleep_time)
-            step += 1
 
     def start_validation_loop(self):
         logger.info("start sync loop")
