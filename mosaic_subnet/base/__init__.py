@@ -72,7 +72,7 @@ class BaseValidator:
             self,
             miner_info: tuple[list[str], Ss58Address],
             input: SampleInput,
-    ) -> [Optional[bytes], float]:
+    ) -> tuple[Optional[bytes], float]:
         start = time.time()
         try:
             result = self.get_miner_generation(miner_info=miner_info, input=input)
@@ -127,3 +127,5 @@ class BaseValidator:
                 continue
             modules_info[module_id] = (module_addr, modules_keys[module_id])
         return modules_info
+
+    
