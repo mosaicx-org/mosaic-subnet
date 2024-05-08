@@ -97,7 +97,7 @@ host should be `0.0.0.0` so it allows all the incoming requests with other ip an
 ### Validator Setup
 
 ```bash
-python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] validator <your_commune_key>
+python mosaic_subnet/cli.py [--testnet] [--log-level=INFO] validator <your_commune_key> [host] [port]
 ```
 
 ### Gateway Setup
