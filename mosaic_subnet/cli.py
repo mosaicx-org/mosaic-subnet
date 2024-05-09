@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from dataclasses import dataclass
 import sys
 import os
@@ -42,6 +42,13 @@ def validator(
     commune_key: Annotated[
         str, typer.Argument(help="Name of the key present in `~/.commune/key`")
     ],
+    host: Annotated[
+        Optional[str],
+        typer.Argument(
+            help="the public ip you've registered, you can simply put 0.0.0.0 here to allow all incoming requests"
+        ),
+    ] = "0.0.0.0",
+    port: Annotated[Optional[int], typer.Argument(help="port")] = 0,
     call_timeout: int = 30,
     iteration_interval: int = 60,
 ):
@@ -51,9 +58,11 @@ def validator(
         use_testnet=ctx.obj.use_testnet,
         iteration_interval=iteration_interval,
         call_timeout=call_timeout,
+        host=host,
+        port=port,
     )
     validator = Validator(key=classic_load_key(commune_key), settings=settings)
-    validator.validation_loop()
+    validator.serve()
 
 
 @cli.command("miner")

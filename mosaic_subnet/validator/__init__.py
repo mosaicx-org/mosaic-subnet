@@ -2,6 +2,9 @@ import asyncio
 import concurrent.futures
 import time
 from functools import partial
+from collections import deque
+from datetime import datetime
+import threading
 
 from communex._common import get_node_url
 from communex.client import CommuneClient
@@ -16,11 +19,20 @@ from mosaic_subnet.validator._config import ValidatorSettings
 from mosaic_subnet.validator.dataset import ValidationDataset
 from mosaic_subnet.validator.model import CLIP
 from mosaic_subnet.validator.utils import normalize_score, weight_score
+from communex.module.module import Module, endpoint
+from typing import List
+from pydantic import BaseModel
+
+
+class WeightHistory(BaseModel):
+    time: datetime
+    data: List
 
 
 class Validator(BaseValidator, Module):
     def __init__(self, key: Keypair, settings: ValidatorSettings | None = None) -> None:
         super().__init__()
+        super(BaseValidator, self).__init__()
         self.settings = settings or ValidatorSettings()
         self.key = key
         self.c_client = CommuneClient(
@@ -30,6 +42,7 @@ class Validator(BaseValidator, Module):
         self.model = CLIP()
         self.dataset = ValidationDataset()
         self.call_timeout = self.settings.call_timeout
+        self.weights_histories = deque(maxlen=10)
 
     def calculate_score(self, img: bytes, prompt: str):
         try:
@@ -71,13 +84,22 @@ class Validator(BaseValidator, Module):
         normalized_scores = normalize_score(score_dict, duration_dict)
         weighted_scores = weight_score(normalized_scores)
 
-        logger.debug("scores: {}", list(zip(
-            weighted_scores.keys(),
-            score_dict.values(),
-            duration_dict.values(),
-            normalized_scores.values(),
-            weighted_scores.values(),
-        )))
+        weight_data = list(
+            zip(
+                weighted_scores.keys(),
+                score_dict.values(),
+                duration_dict.values(),
+                normalized_scores.values(),
+                weighted_scores.values(),
+            )
+        )
+        logger.debug("scores: {}", weight_data)
+        self.weights_histories.append(
+            WeightHistory(
+                time=datetime.now(),
+                data=weight_data,
+            )
+        )
 
         weighted_scores = {k: v for k, v in weighted_scores.items() if v > 0}
         if not weighted_scores:
@@ -111,9 +133,31 @@ class Validator(BaseValidator, Module):
                 logger.info(f"Sleeping for {sleep_time}")
                 time.sleep(sleep_time)
 
+    def start_validation_loop(self):
+        logger.info("start sync loop")
+        self._loop_thread = threading.Thread(target=self.validation_loop, daemon=True)
+        self._loop_thread.start()
+
+    @endpoint
+    def get_weights_history(self):
+        return list(self.weights_histories)
+
+    def serve(self):
+        from communex.module.server import ModuleServer
+        import uvicorn
+
+        self.start_validation_loop()
+
+        if self.settings.port:
+            logger.info("server enabled")
+            server = ModuleServer(self, self.key, subnets_whitelist=[self.netuid])
+            app = server.get_fastapi_app()
+            uvicorn.run(app, host=self.settings.host, port=self.settings.port)
+        else:
+            while True:
+                time.sleep(60)
+
 
 if __name__ == "__main__":
     settings = ValidatorSettings(use_testnet=True)
-    Validator(
-        key=classic_load_key("mosaic-validator0"), settings=settings
-    ).validation_loop()
+    Validator(key=classic_load_key("mosaic-validator0"), settings=settings).serve()
