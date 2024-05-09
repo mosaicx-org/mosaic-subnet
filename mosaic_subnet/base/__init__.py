@@ -5,12 +5,13 @@ import time
 from operator import itemgetter
 from typing import Optional
 
+from communex.misc import get_map_modules
 from communex.module.client import ModuleClient
 from communex.types import Ss58Address
 from loguru import logger
 from pydantic import BaseModel
 
-from .utils import get_ip_port
+from .utils import get_ip_port, extract_address
 
 
 class SampleInput(BaseModel):
@@ -128,4 +129,13 @@ class BaseValidator:
             modules_info[module_id] = (module_addr, modules_keys[module_id])
         return modules_info
 
-    
+    def get_validators(self):
+        modules = get_map_modules(client=self.c_client, netuid=self.netuid)
+        modules_to_list = [value for _, value in modules.items()]
+
+        validators = {}
+        for module in modules_to_list:
+            address = extract_address(module["address"])
+            if module["dividends"] > 0 and address is not None:
+                validators[module["uid"]] = (address.group(0).split(":"), module["key"])
+        return validators

@@ -1,23 +1,28 @@
 import asyncio
+import concurrent.futures
 import random
+import re
 import threading
 import time
-import concurrent.futures
 
 import uvicorn
 from communex._common import get_node_url
 from communex.client import CommuneClient
 from communex.compat.key import classic_load_key
+from communex.module.client import ModuleClient
+from communex.types import Ss58Address
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from loguru import logger
 from substrateinterface import Keypair
-from communex.types import Ss58Address
-from communex.module.client import ModuleClient
-from communex.misc import get_map_modules
-from mosaic_subnet.base import SampleInput, BaseValidator
-from mosaic_subnet.base.utils import get_netuid, get_ip_port, extract_address
+from transformers import pipeline, set_seed
+
+from mosaic_subnet.base import BaseValidator, SampleInput
+from mosaic_subnet.base.model import MagicPromptReq
+from mosaic_subnet.base.utils import (
+    get_netuid,
+)
 from mosaic_subnet.gateway._config import GatewaySettings
 
 app = FastAPI()
@@ -42,11 +47,6 @@ class Gateway(BaseValidator):
         self.netuid = get_netuid(self.c_client)
         self.call_timeout = self.settings.call_timeout
         self.top_miners = {}
-        
-        # {2: (
-        #     ["35.182.244.107", "7000"],
-        #     "5DofQSnXnWjF1VUzYVzTQV658GeBExrVFEQ5B4k8Tr1LcBzb",
-        # )}
         self.validators: dict[int, tuple[list[str], Ss58Address]] = {}
 
         self.sync()
@@ -54,8 +54,11 @@ class Gateway(BaseValidator):
     def sync(self):
         logger.info("fetching top miners...")
         self.top_miners = self.get_top_weights_miners(16)
-        self.get_all_validators_weights_history()
-        logger.info("top miners: {}", self.top_miners)
+        logger.info("fetched miners: {}", self.top_miners)
+
+        logger.info("fetching validators...")
+        self.validators = self.get_validators()
+        logger.info("fetched validators: {}", self.validators)
 
     def sync_loop(self):
         while True:
@@ -89,17 +92,6 @@ class Gateway(BaseValidator):
         return result
 
     def get_all_validators_weights_history(self):
-        modules = get_map_modules(client=self.c_client, netuid=self.netuid)
-        modules_to_list = [value for _, value in modules.items()]
-
-        validators = {}
-        for module in modules_to_list:
-            address = extract_address(module["address"])
-            if module["dividends"] > 0 and address is not None:
-                validators[module["uid"]] = (address.group(0).split(":"), module["key"])
-        logger.info("update validators {}", validators)
-        self.validators = validators
-
         rv = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             it = executor.map(
@@ -110,6 +102,29 @@ class Gateway(BaseValidator):
         for uid, response in zip(self.validators.keys(), validator_answers):
             rv.append({"uid": uid, "weights_history": response})
         return rv
+
+
+magic_prompt_pipe = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Diffusion', tokenizer='gpt2')
+
+
+@app.post("/magic_prompt")
+async def magic_prompt(req: MagicPromptReq):
+    prompt = req.prompt.replace("\n", "").lower().capitalize()
+    prompt = re.sub(r"[,:\-–.!;?_]", '', prompt)
+    generated_text = prompt
+
+    for count in range(5):
+        seed = random.randint(100, 1000000)
+        set_seed(seed)
+
+        response = magic_prompt_pipe(prompt, pad_token_id=50256, max_length=77, truncation=True)[0]
+        generated_text = response['generated_text'].strip()
+        if len(generated_text) > (len(prompt) + 8):
+            if generated_text.endswith((":", "-", "—")) is False:
+                generated_text = re.sub(r'[^ ]+\.[^ ]+', '', generated_text).replace("<", "").replace(">", "")
+            break
+
+    return {"text": generated_text}
 
 
 @app.post(
