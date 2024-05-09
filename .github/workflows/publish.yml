@@ -15,6 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Get the version
@@ -36,5 +37,5 @@ jobs:
           context: .
           push: true
           tags: |
-            mos4ic/mosaic-subnet:latest
             mos4ic/mosaic-subnet:${{ steps.get_version.outputs.VERSION }}
+            mos4ic/mosaic-subnet:alpha
