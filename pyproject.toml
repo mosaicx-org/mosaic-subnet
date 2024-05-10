@@ -30,6 +30,9 @@ supervisor = "^4.2.5"
 pylint = "^3.1.0"
 attrs = "^23.2.0"
 
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "^4.2.0"
+
 [build-system]
 requires = ["poetry-core>=1.8.2"]
 build-backend = "poetry.core.masonry.api"

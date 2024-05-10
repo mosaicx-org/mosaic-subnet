@@ -1,16 +1,21 @@
 import asyncio
+import base64
 import concurrent.futures
 import random
 import re
 import threading
 import time
+from io import BytesIO
 
+import torch
 import uvicorn
+from PIL import Image
 from communex._common import get_node_url
 from communex.client import CommuneClient
 from communex.compat.key import classic_load_key
 from communex.module.client import ModuleClient
 from communex.types import Ss58Address
+from diffusers import StableDiffusionXLImg2ImgPipeline
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -48,6 +53,13 @@ class Gateway(BaseValidator):
         self.call_timeout = self.settings.call_timeout
         self.top_miners = {}
         self.validators: dict[int, tuple[list[str], Ss58Address]] = {}
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "mps")
+        self.pipe = StableDiffusionXLImg2ImgPipeline.from_pretrained(
+            "stabilityai/stable-diffusion-xl-refiner-1.0",
+            torch_dtype=torch.float16,
+            variant="fp16",
+            use_safetensors=True
+        ).to(self.device)
 
         self.sync()
 
@@ -141,7 +153,10 @@ async def generate_image(req: SampleInput):
     for future in asyncio.as_completed(tasks):
         result = await future
         if result:
-            return Response(content=result, media_type="image/png")
+            result = app.m.pipe(prompt=req.prompt, width=512, height=512, image=Image.open(BytesIO(result))).images[0]
+            buffered = BytesIO()
+            result.save(buffered, format="PNG")
+            return Response(content=buffered.getvalue(), media_type="image/png")
     return Response(content=b"", media_type="image/png")
 
 
