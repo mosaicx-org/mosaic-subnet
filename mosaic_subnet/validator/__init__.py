@@ -1,5 +1,4 @@
 import asyncio
-import concurrent.futures
 import time
 from functools import partial
 from collections import deque
@@ -57,13 +56,13 @@ class Validator(BaseValidator, Module):
 
         input = self.get_validate_input()
         logger.debug("input:", input)
-        get_miner_generation = partial(
-            self.get_miner_generation_with_elapsed, input=input
-        )
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            it = executor.map(get_miner_generation, modules_info.values())
-            miner_answers = [*it]
-
+        futures = []
+        for miner_info in modules_info.values():
+            future = asyncio.create_task(
+                self.get_miner_generation_with_elapsed(input=input, miner_info=miner_info)
+            )
+            futures.append(future)
+        miner_answers = await asyncio.gather(*futures)
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
             miner_answer, elapsed = miner_response
             if not miner_answer:

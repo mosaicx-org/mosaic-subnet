@@ -69,14 +69,14 @@ class BaseValidator:
             logger.debug(f"Call error: {e}")
             return None
 
-    def get_miner_generation_with_elapsed(
+    async def get_miner_generation_with_elapsed(
             self,
             miner_info: tuple[list[str], Ss58Address],
             input: SampleInput,
     ) -> tuple[Optional[bytes], float]:
         start = time.time()
         try:
-            result = self.get_miner_generation(miner_info=miner_info, input=input)
+            result = await self.get_miner_generation_async(miner_info=miner_info, input=input)
         except Exception:
             return None, 99999
         elapsed = time.time() - start
