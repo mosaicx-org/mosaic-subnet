@@ -50,6 +50,9 @@ class Validator(BaseValidator, Module):
             return 0
 
     async def validate_step(self):
+        self.c_client = CommuneClient(
+            get_node_url(use_testnet=self.settings.use_testnet)
+        )
         score_dict = dict()
         duration_dict = dict()
         modules_info = self.get_queryable_miners()
@@ -59,7 +62,9 @@ class Validator(BaseValidator, Module):
         futures = []
         for miner_info in modules_info.values():
             future = asyncio.create_task(
-                self.get_miner_generation_with_elapsed(input=input, miner_info=miner_info)
+                self.get_miner_generation_with_elapsed(
+                    input=input, miner_info=miner_info
+                )
             )
             futures.append(future)
         miner_answers = await asyncio.gather(*futures)
