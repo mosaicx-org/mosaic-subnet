@@ -4,6 +4,7 @@ from functools import partial
 from collections import deque
 from datetime import datetime
 import threading
+import traceback
 
 from communex._common import get_node_url
 from communex.client import CommuneClient
@@ -129,13 +130,18 @@ class Validator(BaseValidator, Module):
     def validation_loop(self) -> None:
         settings = self.settings
         while True:
-            start_time = time.time()
-            asyncio.run(self.validate_step())
-            elapsed = time.time() - start_time
-            if elapsed < settings.iteration_interval:
-                sleep_time = settings.iteration_interval - elapsed
-                logger.info(f"Sleeping for {sleep_time}")
-                time.sleep(sleep_time)
+            try:
+                logger.info(f"run validation loop")
+                start_time = time.time()
+                asyncio.run(self.validate_step())
+                elapsed = time.time() - start_time
+                if elapsed < settings.iteration_interval:
+                    sleep_time = settings.iteration_interval - elapsed
+                    logger.info(f"Sleeping for {sleep_time}")
+                    time.sleep(sleep_time)
+            except Exception as e:
+                print(traceback.format_exc())
+
 
     def start_validation_loop(self):
         logger.info("start sync loop")
