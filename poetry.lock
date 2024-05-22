@@ -621,13 +621,13 @@ test = ["pytest"]
 
 [[package]]
 name = "communex"
-version = "0.1.27.5"
+version = "0.1.28"
 description = "A library for Commune network focused on simplicity"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "communex-0.1.27.5-py3-none-any.whl", hash = "sha256:609abbc68af0e2c3ab008ee4b046de4888eb64bb36a889c87bfb231d48784cb8"},
-    {file = "communex-0.1.27.5.tar.gz", hash = "sha256:7741afa1296eb66da214470d96996eab29bcfdb7b6c24559c16534381e9a318b"},
+    {file = "communex-0.1.28-py3-none-any.whl", hash = "sha256:bb9254b2ace00c14339eed519526d7ef33ac281d13e0d5129567c3aa96f5663f"},
+    {file = "communex-0.1.28.tar.gz", hash = "sha256:41142377a7afafcf0c2a4c2350d6bdc6ed29d33a6c20b5e0de61e7b9642c20eb"},
 ]
 
 [package.dependencies]
@@ -5079,4 +5079,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e8013205e1efb6e2b6e00972d2641d42df1df5a8a16d862fe029417bd0ea481f"
+content-hash = "f1284d7d3cfec02b1af87a7a05fc1cc02ef3fb0638d682a25259093e3eeffe61"

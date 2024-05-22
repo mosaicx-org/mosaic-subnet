@@ -59,14 +59,10 @@ class Validator(BaseValidator, Module):
         modules_info = self.get_queryable_miners()
 
         input = self.get_validate_input()
-        logger.debug("input:", input)
+        logger.debug("input: {}", input)
         futures = []
         for miner_info in modules_info.values():
-            future = asyncio.create_task(
-                self.get_miner_generation_with_elapsed(
-                    input=input, miner_info=miner_info
-                )
-            )
+            future = self.get_miner_generation_with_elapsed(miner_info, input)
             futures.append(future)
         miner_answers = await asyncio.gather(*futures)
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
