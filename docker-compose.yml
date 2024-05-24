@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  mosaic-gateway:
+    container_name: mosaic-gateway
+    restart: on-failure
+    network_mode: host
+    image: mos4ic/mosaic-subnet:alpha
+    command: python mosaic_subnet/cli.py --log-level=INFO gateway mtest02 0.0.0.0 9009
+    volumes:
+      - $HOME/.commune:/root/.commune
+      - $HOME/.cache/huggingface:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ "gpu" ]
+              count: all
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "10"
+    depends_on:
+      - mosaic-validator
+  mosaic-validator:
+    container_name: mosaic-validator
+    restart: on-failure
+    network_mode: host
+    image: mos4ic/mosaic-subnet:alpha
+    command: python mosaic_subnet/cli.py --log-level=DEBUG validator mtest02 0.0.0.0 7000
+    volumes:
+      - $HOME/.commune:/root/.commune
+      - $HOME/.cache/huggingface:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ "gpu" ]
+              count: all
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "10"
+  watchtower:
+    container_name: mosaic-watchtower
+    restart: on-failure
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 mosaic-validator mosaic-gateway
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "10"
