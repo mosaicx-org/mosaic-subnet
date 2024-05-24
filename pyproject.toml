@@ -30,6 +30,7 @@ loguru = "^0.7.2"
 supervisor = "^4.2.5"
 pylint = "^3.1.0"
 attrs = "^23.2.0"
+hpsv2x = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "^4.2.0"
