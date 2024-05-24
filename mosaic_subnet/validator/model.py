@@ -1,12 +1,12 @@
 from io import BytesIO
 
+import hpsv2
 import torch
 from PIL import Image
+from communex.module.module import Module
+from loguru import logger
 from transformers import CLIPProcessor, CLIPModel
 from transformers import pipeline
-from loguru import logger
-
-from communex.module.module import Module, endpoint
 
 
 class CLIP(Module):
@@ -28,6 +28,21 @@ class CLIP(Module):
         inputs["pixel_values"] = inputs["pixel_values"].to(self.device)
         outputs = self.model(**inputs)
         return outputs.logits_per_image.sum().tolist()
+
+    def get_metadata(self) -> dict:
+        return {"model": self.model_name}
+
+
+class HPS(Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.model_name = "HPSv2"
+        logger.info(self.model_name)
+
+    def get_similarity(self, file: bytes, prompt: str) -> float:
+        img = Image.open(BytesIO(file)).convert("RGB")
+        results = hpsv2.score(img, prompt=prompt, hps_version="v2.1")
+        return results[0] * 100
 
     def get_metadata(self) -> dict:
         return {"model": self.model_name}

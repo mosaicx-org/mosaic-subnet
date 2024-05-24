@@ -1,27 +1,25 @@
 import asyncio
+import threading
 import time
-from functools import partial
+import traceback
 from collections import deque
 from datetime import datetime
-import threading
-import traceback
+from typing import List
 
 from communex._common import get_node_url
 from communex.client import CommuneClient
 from communex.compat.key import classic_load_key
-from communex.module.module import Module
+from communex.module.module import Module, endpoint
 from loguru import logger
+from pydantic import BaseModel
 from substrateinterface import Keypair
 
 from mosaic_subnet.base import SampleInput, BaseValidator
 from mosaic_subnet.base.utils import get_netuid
 from mosaic_subnet.validator._config import ValidatorSettings
 from mosaic_subnet.validator.dataset import ValidationDataset
-from mosaic_subnet.validator.model import CLIP
+from mosaic_subnet.validator.model import HPS
 from mosaic_subnet.validator.utils import normalize_score, weight_score
-from communex.module.module import Module, endpoint
-from typing import List
-from pydantic import BaseModel
 
 
 class WeightHistory(BaseModel):
@@ -39,7 +37,7 @@ class Validator(BaseValidator, Module):
             get_node_url(use_testnet=self.settings.use_testnet)
         )
         self.netuid = get_netuid(self.c_client)
-        self.model = CLIP()
+        self.model = HPS()
         self.dataset = ValidationDataset()
         self.call_timeout = self.settings.call_timeout
         self.weights_histories = deque(maxlen=10)
@@ -47,7 +45,8 @@ class Validator(BaseValidator, Module):
     def calculate_score(self, img: bytes, prompt: str):
         try:
             return self.model.get_similarity(img, prompt)
-        except Exception:
+        except Exception as e:
+            logger.error(e)
             return 0
 
     async def validate_step(self):
@@ -137,7 +136,6 @@ class Validator(BaseValidator, Module):
                     time.sleep(sleep_time)
             except Exception as e:
                 print(traceback.format_exc())
-
 
     def start_validation_loop(self):
         logger.info("start sync loop")
