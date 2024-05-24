@@ -1,8 +1,6 @@
 import asyncio
-import base64
 import concurrent.futures
 import random
-import re
 import threading
 import time
 from io import BytesIO
@@ -21,10 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from loguru import logger
 from substrateinterface import Keypair
-from transformers import pipeline, set_seed
 
 from mosaic_subnet.base import BaseValidator, SampleInput
-from mosaic_subnet.base.model import MagicPromptReq
 from mosaic_subnet.base.utils import (
     get_netuid,
 )
@@ -114,29 +110,6 @@ class Gateway(BaseValidator):
         for uid, response in zip(self.validators.keys(), validator_answers):
             rv.append({"uid": uid, "weights_history": response})
         return rv
-
-
-magic_prompt_pipe = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Diffusion', tokenizer='gpt2')
-
-
-@app.post("/magic_prompt")
-async def magic_prompt(req: MagicPromptReq):
-    prompt = req.prompt.replace("\n", "").lower().capitalize()
-    prompt = re.sub(r"[,:\-–.!;?_]", '', prompt)
-    generated_text = prompt
-
-    for count in range(5):
-        seed = random.randint(100, 1000000)
-        set_seed(seed)
-
-        response = magic_prompt_pipe(prompt, pad_token_id=50256, max_length=77, truncation=True)[0]
-        generated_text = response['generated_text'].strip()
-        if len(generated_text) > (len(prompt) + 8):
-            if generated_text.endswith((":", "-", "—")) is False:
-                generated_text = re.sub(r'[^ ]+\.[^ ]+', '', generated_text).replace("<", "").replace(">", "")
-            break
-
-    return {"text": generated_text}
 
 
 @app.post(
