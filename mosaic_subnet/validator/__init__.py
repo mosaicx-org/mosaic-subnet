@@ -33,14 +33,16 @@ class Validator(BaseValidator, Module):
         super(BaseValidator, self).__init__()
         self.settings = settings or ValidatorSettings()
         self.key = key
-        self.c_client = CommuneClient(
-            get_node_url(use_testnet=self.settings.use_testnet)
-        )
+
         self.netuid = get_netuid(self.c_client)
         self.model = HPS()
         self.dataset = ValidationDataset()
         self.call_timeout = self.settings.call_timeout
         self.weights_histories = deque(maxlen=10)
+
+    @property
+    def c_client(self):
+        return CommuneClient(get_node_url(use_testnet=self.settings.use_testnet))
 
     def calculate_score(self, img: bytes, prompt: str):
         try:
@@ -50,9 +52,6 @@ class Validator(BaseValidator, Module):
             return 0
 
     async def validate_step(self):
-        self.c_client = CommuneClient(
-            get_node_url(use_testnet=self.settings.use_testnet)
-        )
         score_dict = dict()
         duration_dict = dict()
         modules_info = self.get_queryable_miners()
