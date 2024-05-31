@@ -52,9 +52,6 @@ class Validator(BaseValidator, Module):
             return 0
 
     async def validate_step(self):
-        self.c_client = CommuneClient(
-            get_node_url(use_testnet=self.settings.use_testnet)
-        )
         score_dict = dict()
         duration_dict = dict()
         modules_info = self.get_queryable_miners()
